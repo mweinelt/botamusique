@@ -243,6 +243,8 @@ class MumbleBot:
 
     # All text send to the chat is analysed by this function
     def message_received(self, text):
+        self.log.info(f"raw: {text}")
+        self.log.info(f"raw: {text.message}")
         raw_message = text.message.strip()
         message = re.sub(r'<.*?>', '', raw_message)
         user = self.mumble.users[text.actor]['name']
