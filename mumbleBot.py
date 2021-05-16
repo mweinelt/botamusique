@@ -252,20 +252,12 @@ class MumbleBot:
             # you want to split the username
             user = user.split()[0]
 
-        if message[0] in var.config.get('commands', 'command_symbol'):
-            # remove the symbol from the message
-            message = message[1:].split(' ', 1)
+        command_symbol = var.config.get('commands', 'command_symbol')
+        if match := re.match(f"^[{"".join(command_symbol)}(?P<command>[^\s]+)(?:\s(?P<argument>.*))?", message):
+            command = match.group("command").lower()
+            argument = match.group("argument")
 
-            # use the first word as a command, the others one as  parameters
-            if len(message) > 0:
-                command = message[0].lower()
-                parameter = ''
-                if len(message) > 1:
-                    parameter = message[1].rstrip()
-            else:
-                return
-
-            self.log.info('bot: received command ' + command + ' - ' + parameter + ' by ' + user)
+            self.log.info(f'bot: received command "{command}" with arguments "{arguments}" from {user}')
 
             # Anti stupid guy function
             if not self.is_admin(user) and not var.config.getboolean('bot', 'allow_private_message') and text.session:
@@ -279,8 +271,8 @@ class MumbleBot:
                         tr('user_ban'))
                     return
 
-            if not self.is_admin(user) and parameter:
-                input_url = util.get_url_from_input(parameter)
+            if not self.is_admin(user) and argument:
+                input_url = util.get_url_from_input(argument)
                 if input_url and var.db.has_option('url_ban', input_url):
                     self.mumble.users[text.actor].send_text_message(
                         tr('url_ban'))
@@ -323,7 +315,7 @@ class MumbleBot:
                         tr('not_in_my_channel'))
                     return
 
-                self.cmd_handle[command_exc]['handle'](self, user, text, command_exc, parameter)
+                self.cmd_handle[command_exc]['handle'](self, user, text, command_exc, argument)
             except:
                 error_traceback = traceback.format_exc()
                 error = error_traceback.rstrip().split("\n")[-1]
