@@ -99,6 +99,7 @@ class MusicCache(dict):
         if id in self:
             self.log.debug("library: cache freed for item: %s" % self[id].format_debug_string())
             del self[id]
+            raise
 
     def free_all(self):
         self.log.debug("library: all cache freed")
